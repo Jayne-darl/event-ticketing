@@ -5,7 +5,7 @@ import ticketRouter from './resources/ticket/ticket.router'
 
 const testRouter = Router()
 
-testRouter.all('/', (_, res) => res.json({ message: 'OK' }))
+testRouter.all('/', (_, res) => res.json({ message: 'Welcome to Event Ticketing Platform' }))
 
 const appRouter = [testRouter, userRouter, eventRouter, ticketRouter]
 
