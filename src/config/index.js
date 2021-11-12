@@ -6,7 +6,7 @@ const env = process.env.NODE_ENV || 'development'
 
 const base_config = {
   env,
-  port: 5000,
+  port: process.env.PORT || 5000,
   secrets: {
     jwt: process.env.jwt_secret,
     jwt_exp: process.env.jwt_exp,
