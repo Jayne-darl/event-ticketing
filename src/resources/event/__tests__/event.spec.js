@@ -22,6 +22,7 @@ describe('create event', () => {
     }
 
     await validate_create_event_formdata(req, res)
+    
   })
   test('create an event ', async () => {
     const user = mongoose.Types.ObjectId()
