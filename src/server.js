@@ -1,22 +1,29 @@
-import express from "express";
-import morgan from "morgan";
-import config from "./config";
-import cors from "cors";
+import express from 'express'
+import morgan from 'morgan'
+import config from './config'
+import cors from 'cors'
+import { config as dotenvConfig } from 'dotenv'
+import appRouter from './router'
+import { connect } from './utils/db'
 
-const app = express();
+dotenvConfig()
 
-app.disable("x-powered-by");
+const app = express()
 
-app.use(cors());
-app.use(express.json());
-app.use(morgan("dev"));
+app.disable('x-powered-by')
+
+app.use(cors())
+app.use(express.json())
+app.use(morgan('dev'))
+app.use('/api/v1', appRouter)
 
 export const start = async () => {
   try {
+    await connect()
     app.listen(config.port, () => {
-      console.log(`REST API on http://localhost:${config.port}/api`);
-    });
+      console.log(`REST API on http://localhost:${config.port}`)
+    })
   } catch (e) {
-    console.error(e);
+    console.error(e)
   }
-};
+}
