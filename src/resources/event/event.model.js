@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+import mongoose from 'mongoose'
 
 const eventSchema = new mongoose.Schema({
   name: { type: String, required: true },
@@ -8,16 +8,19 @@ const eventSchema = new mongoose.Schema({
   time: { type: Number, required: true },
   active: { type: Boolean, default: false },
   free: { type: Boolean, required: true },
+  price:{type:Number, default:0, required:isFree},
   description: String,
   createdBy: {
     type: mongoose.SchemaTypes.ObjectId,
-    ref: "user",
+    ref: 'user',
     required: true,
   },
-});
+})
 
 function isNotVirtual() {
-  return this.virtual === true ? false : true;
+  return this.virtual === true ? false : true
 }
-
-export const Event = mongoose.model("event", eventSchema);
+function isFree() {
+  return this.free === true?false:true
+}
+export const Event = mongoose.model('event', eventSchema)

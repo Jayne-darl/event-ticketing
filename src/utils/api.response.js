@@ -3,10 +3,10 @@
 export const request_response = ({
   response,
   status_code = 500,
-  message = "Internal Server Error. Please try again or contact Support",
+  message = 'Internal Server Error. Please try again or contact Support',
   data,
 }) =>
   response.status(status_code).json({
     message,
     ...(data && { data }),
-  });
+  })

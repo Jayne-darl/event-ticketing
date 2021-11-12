@@ -1,8 +1,8 @@
-import { dev_config } from "./dev";
-import { prod_config } from "./prod";
-import { test_config } from "./testing";
+import { dev_config } from './dev'
+import { prod_config } from './prod'
+import { test_config } from './testing'
 
-const env = process.env.NODE_ENV || "development";
+const env = process.env.NODE_ENV || 'development'
 
 const base_config = {
   env,
@@ -11,35 +11,35 @@ const base_config = {
     jwt: process.env.jwt_secret,
     jwt_exp: process.env.jwt_exp,
   },
-};
+}
 
-let env_config = {};
+let env_config = {}
 
 switch (env) {
-  case "development":
+  case 'development':
     env_config = {
       ...dev_config,
       secrets: { ...base_config.secrets, ...dev_config.secrets },
-    };
-    break;
-  case "test":
+    }
+    break
+  case 'test':
     env_config = {
       ...test_config,
       secrets: { ...base_config.secrets, ...test_config.secrets },
-    };
-    break;
-  case "production":
+    }
+    break
+  case 'production':
     env_config = {
       ...prod_config,
       secrets: { ...base_config.secrets, ...prod_config.secrets },
-    };
+    }
   default:
     env_config = {
       ...dev_config,
       secrets: { ...base_config.secrets, ...dev_config.secrets },
-    };
+    }
 }
 
-const app_config = { ...base_config, ...env_config };
+const app_config = { ...base_config, ...env_config }
 
-export default app_config;
+export default app_config

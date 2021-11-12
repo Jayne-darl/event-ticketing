@@ -1,12 +1,12 @@
-import { Router } from "express";
-import userRouter from "./resources/user/user.router";
-import eventRouter from "./resources/event/event.router";
-import ticketRouter from "./resources/ticket/ticket.router";
+import { Router } from 'express'
+import userRouter from './resources/user/user.router'
+import eventRouter from './resources/event/event.router'
+import ticketRouter from './resources/ticket/ticket.router'
 
-const testRouter = Router();
+const testRouter = Router()
 
-testRouter.all("/", (_, res) => res.json({ message: "OK" }));
+testRouter.all('/', (_, res) => res.json({ message: 'OK' }))
 
-const appRouter = [testRouter, userRouter, eventRouter, ticketRouter];
+const appRouter = [testRouter, userRouter, eventRouter, ticketRouter]
 
-export default appRouter;
+export default appRouter

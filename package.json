@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "build": "babel src -d dist",
-    "test": "cross-env NODE_ENV=test && sleep 5 && echo 'Tests completed successfully'",
+    "test": "cross-env NODE_ENV=test jest --forceExit --detectOpenHandles  --silent",
     "dev": "nodemon --exec npm restart",
     "restart": "rimraf dist && npm run build && npm start",
     "start": "node dist/index.js"
@@ -19,12 +19,10 @@
   "dependencies": {
     "bcrypt": "^5.0.1",
     "cors": "^2.8.5",
-    "cuid": "^2.1.8",
     "dotenv": "^10.0.0",
     "express": "^4.17.1",
     "joi": "^17.4.2",
     "jsonwebtoken": "^8.5.1",
-    "lodash": "^4.17.21",
     "mongoose": "^6.0.12",
     "morgan": "^1.10.0"
   },
@@ -45,5 +43,17 @@
     "nodemon": "^2.0.15",
     "prettier": "^2.4.1",
     "rimraf": "^3.0.2"
+  },
+  "jest": {
+    "verbose": true,
+    "testURL": "http://localhost/",
+    "testEnvironment": "node",
+    "setupFilesAfterEnv": [
+      "<rootDir>/test_db_setup.js"
+    ],
+    "testPathIgnorePatterns": [
+      "dist/"
+    ],
+    "restoreMocks": true
   }
 }

@@ -1,53 +1,51 @@
-import jwt from "jsonwebtoken";
-import app_config from "../config";
-import { request_response } from "./api.response";
-import { User } from "../resources/user/user.model";
+import jwt from 'jsonwebtoken'
+import app_config from '../config'
+import { request_response } from './api.response'
+import { User } from '../resources/user/user.model'
 
-const verifyToken = (token) => {
+export const verifyToken = (token) => {
   try {
     const value = jwt.verify(token, app_config.secrets.jwt, {
-      algorithms: ["HS256"],
-    });
+      algorithms: ['HS256'],
+    })
 
-    return value;
+    return value
   } catch (error) {
-    // console.log("errrrrr", error);
-    throw new Error(error);
+    throw new Error(error)
   }
-};
+}
 
 export const authorise_user = async (req, response, next) => {
-  const bearer = req.headers.authorization;
+  const bearer = req.headers.authorization
 
-  if (!bearer || !bearer.startsWith("Bearer ")) {
+  if (!bearer || !bearer.startsWith('Bearer ')) {
     return request_response({
       response,
       status_code: 401,
-      message: "Unauthorised",
-    });
+      message: 'Unauthorised',
+    })
   }
 
-  const token = bearer.split("Bearer ")[1].trim();
-  let payload;
+  const token = bearer.split('Bearer ')[1].trim()
+  let payload
   try {
-    payload = verifyToken(token);
+    payload = verifyToken(token)
 
     const user = await User.findById(payload.id)
-      .select("-password")
+      .select('-password')
       .lean()
-      .exec();
+      .exec()
 
     if (!user) {
       return request_response({
         response,
         status_code: 404,
-        message: "User not found",
-      });
+        message: 'User not found',
+      })
     }
-    req.user = user;
-    return next();
+    req.user = user
+    return next()
   } catch (e) {
-    // console.log("hahahahha", e);
-    return request_response({ response });
+    return request_response({ response })
   }
-};
+}
