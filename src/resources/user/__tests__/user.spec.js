@@ -1,152 +1,105 @@
-import { User } from '../user.model'
-import { UserController } from '../user.controllers'
-import {
-  signin_validate,
-  signup_validate,
-  check_if_user_already_exists,
-} from '../user.middleware'
-
-const { signup, signin } = UserController
+import request from 'supertest';
+import faker from 'faker';
+import { User } from '../user.model';
+import { ROUTES } from '../routes';
+import app from '../../../server';
 
 it('Testing to see if Jest works', () => {
-  expect(1).toBe(1)
-})
+  expect(1).toBe(1);
+});
+
+const email = 'tundeoyoyo@gmail.com';
+const password = '12345gh778';
+beforeEach(async () => {
+  const user = await User.create({
+    email,
+    password,
+    name: faker.name.findName(),
+  });
+});
+
+const BASE_URL = '/api/v1';
 
 describe('signup', () => {
-  test('requires name, email and password', async () => {
-    expect.assertions(2)
-    const req = { body: {} }
-    const res = {
-      status(status) {
-        expect(status).toBe(422)
-        return this
-      },
-      json(result) {
-        expect(typeof result.message).toBe('string')
-      },
-    }
+  test('validates signup formdata', async () => {
+    const body = {};
 
-    await signup_validate(req, res)
-  })
+    const response = await request(app)
+      .post(`${BASE_URL}${ROUTES.SIGN_UP}`)
+      .send(body);
+    expect(response.statusCode).toBe(422);
+  });
+
   test('creates user document', async () => {
-    expect.assertions(3)
-    const req = {
-      body: { name: 'Tope', email: 'tope@gmail.com', password: '1234rght' },
-    }
-    const res = {
-      status(status) {
-        expect(status).toBe(201)
-        return this
-      },
-      json(result) {
-        expect(typeof result.message).toBe('string')
-        expect(typeof result.data).toBe('object')
-      },
-    }
+    const body = {
+      name: faker.name.findName(),
+      email: 'ogbongeti@gmail.com',
+      password: faker.internet.password(8, true, new RegExp('^[a-zA-Z0-9]{3,30}$')),
+    };
 
-    await signup(req, res)
-  })
+    const response = await request(app)
+      .post(`${BASE_URL}${ROUTES.SIGN_UP}`)
+      .send(body);
+    expect(response.statusCode).toBe(201);
+    expect(response.body.data.token).toBeTruthy();
+    expect(typeof response.body.data.token).toBe('string');
+  });
   test('user with email already exist', async () => {
-    expect.assertions(3)
+    const body = {
+      name: faker.name.findName(),
+      email: 'tundeoyoyo@gmail.com',
+      password: faker.internet.password(),
+    };
 
-    const fields = {
-      name: 'Tope',
-      email: 'tope@gmail.com',
-      password: '1234rght',
-    }
-    await User.create(fields)
-
-    const req = {
-      body: { email: 'tope@gmail.com' },
-    }
-    const res = {
-      status(status) {
-        expect(status).toBe(400)
-        return this
-      },
-      json(result) {
-        expect(typeof result.message).toBe('string')
-        expect(result.message).toBe('User with email already exist')
-      },
-    }
-    await check_if_user_already_exists(req, res)
-  })
-})
+    const response = await request(app)
+      .post(`${BASE_URL}${ROUTES.SIGN_UP}`)
+      .send(body);
+    expect(response.statusCode).toBe(400);
+  });
+});
 
 describe('signin', () => {
-  test('requires email and password', async () => {
-    const req = { body: {} }
-    const res = {
-      status(status) {
-        expect(status).toBe(422)
-        return this
-      },
-      json(result) {
-        expect(typeof result.message).toBe('string')
-      },
-    }
-    await signin_validate(req, res)
-  })
-  test('user should exist', async () => {
-    expect.assertions(3)
+  test('validates signin data', async () => {
+    const body = {};
 
-    const req = { body: { email: 'tunde@gmail.com', password: '1234rght' } }
-    const res = {
-      status(status) {
-        expect(status).toBe(404)
-        return this
-      },
-      json(result) {
-        expect(typeof result.message).toBe('string')
-        expect(result.message).toBe('User not found')
-      },
-    }
-    await signin(req, res)
-  })
-  test('user password should match', async () => {
-    expect.assertions(3)
-
-    await User.create({
-      name: 'Tope',
+    const response = await request(app)
+      .post(`${BASE_URL}${ROUTES.SIGN_IN}`)
+      .send(body);
+    expect(response.statusCode).toBe(422);
+  });
+  test('signing in user that doesn\'t exist', async () => {
+    const body = {
       email: 'tope@gmail.com',
-      password: '1234rghk',
-    })
+      password: faker.internet.password(),
+    };
 
-    const req = { body: { email: 'tope@gmail.com', password: '1234rghi' } }
-    const res = {
-      status(status) {
-        expect(status).toBe(401)
-        return this
-      },
-      json(result) {
-        expect(typeof result.message).toBe('string')
-        expect(result.message).toBe('Invalid password')
-      },
-    }
-    await signin(req, res)
-  })
-  test('creates new token and signin user', async () => {
-    expect.assertions(5)
+    const response = await request(app)
+      .post(`${BASE_URL}${ROUTES.SIGN_IN}`)
+      .send(body);
+    expect(response.statusCode).toBe(404);
+  });
+  test('signing in with invalid password', async () => {
+    const body = {
+      email: 'tundeoyoyo@gmail.com',
+      password: '12345gh7ty',
+    };
 
-    await User.create({
-      name: 'Tope',
-      email: 'tope@gmail.com',
-      password: '1234rghk',
-    })
+    const response = await request(app)
+      .post(`${BASE_URL}${ROUTES.SIGN_IN}`)
+      .send(body);
+    expect(response.statusCode).toBe(401);
+  });
+  test('signs in user', async () => {
+    const body = {
+      email: 'tundeoyoyo@gmail.com',
+      password: '12345gh778',
+    };
 
-    const req = { body: { email: 'tope@gmail.com', password: '1234rghk' } }
-    const res = {
-      status(status) {
-        expect(status).toBe(200)
-        return this
-      },
-      json(result) {
-        expect(typeof result.message).toBe('string')
-        expect(typeof result.data).toBe('object')
-        expect(typeof result.data.token).toBe('string')
-        expect(result.message).toBe('User successfully signed in')
-      },
-    }
-    await signin(req, res)
-  })
-})
+    const response = await request(app)
+      .post(`${BASE_URL}${ROUTES.SIGN_IN}`)
+      .send(body);
+    expect(response.statusCode).toBe(200);
+    expect(response.body.data.token).toBeTruthy();
+    expect(typeof response.body.data.token).toBe('string');
+  });
+});

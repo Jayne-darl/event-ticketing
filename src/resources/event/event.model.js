@@ -1,26 +1,35 @@
-import mongoose from 'mongoose'
+import { date } from 'joi';
+import { Schema, model, SchemaTypes } from 'mongoose';
 
-const eventSchema = new mongoose.Schema({
-  name: { type: String, required: true },
-  virtual: { type: Boolean, required: true },
-  location: { type: String, required: isNotVirtual },
-  date: { type: Date, required: true },
-  time: { type: Number, required: true },
-  active: { type: Boolean, default: false },
-  free: { type: Boolean, required: true },
-  price:{type:Number, default:0, required:isFree},
-  description: String,
-  createdBy: {
-    type: mongoose.SchemaTypes.ObjectId,
-    ref: 'user',
-    required: true,
+const EventDateTime = new Schema({
+  eventDate: { type: Date, required: true },
+  eventStartTime: { type: Number, required: true },
+  eventEndTime: { type: Number, required: true },
+});
+
+const eventSchema = new Schema(
+  {
+    name: { type: String, required: true },
+    virtual: { type: Boolean, required: true },
+    location: { type: String, required: isNotVirtual },
+    eventDateTime: {
+      type: [EventDateTime], required: true,
+    },
+    price: { type: Number, default: 0 },
+    description: String,
+    createdBy: {
+      type: SchemaTypes.ObjectId,
+      ref: 'user',
+      required: true,
+    },
   },
-})
+  { timestamps: true },
+);
 
 function isNotVirtual() {
-  return this.virtual === true ? false : true
+  return this.virtual !== true;
 }
 function isFree() {
-  return this.free === true?false:true
+  return this.free !== true;
 }
-export const Event = mongoose.model('event', eventSchema)
+export const Event = model('event', eventSchema);

@@ -1,23 +1,21 @@
 {
-  "env": {
-    "es2021": true,
-    "node": true
-  },
-  "parser": "@babel/eslint-parser",
-  "extends": ["prettier", "airbnb-base", "standard", "prettier/standard"],
-  "plugins": ["prettier", "jest"],
-  "parserOptions": {
-    "ecmaVersion": 12,
-    "sourceType": "module"
-  },
-  "rules": {
-    "promise/catch-or-return": "error",
-    "prettier/prettier": [
-      "error",
-      {
-        "singleQuote": true,
-        "semi": false
-      }
-    ]
-  }
+    "env": {
+        "es2021": true,
+        "node": true
+    },
+    "extends": [
+        "airbnb-base"
+    ],
+    "parserOptions": {
+        "ecmaVersion": 13,
+        "sourceType": "module"
+    },
+    "rules": {
+        "camelcase": "off",
+        "import/prefer-default-export": "off",
+        "no-underscore-dangle": "off",
+        "prefer-regex-literals": "off",
+        "max-len": "off"
+    },
+    "ignorePatterns": ["src/**/__tests__/*", "node_modules/**/*", "dist/**/*"]
 }

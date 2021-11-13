@@ -1,66 +1,71 @@
-import mongoose from 'mongoose'
-import { ticketController } from '../ticket.contollers'
-import {
-  check_if_event_exists,
-  validate_ticket_request,
-} from '../ticket.middleware'
+import mongoose from 'mongoose';
+import request from 'supertest';
+import faker from 'faker';
+import app from '../../../server';
+import { Event } from '../../event/event.model';
+import { User } from '../../user/user.model';
+import { newToken } from '../../user/user.utils';
+import { ROUTES } from '../routes';
 
-const { createTicket } = ticketController
+let token; let jwt; let user; let
+  event;
+
+beforeEach(async () => {
+  jwt = `Bearer ${token}`;
+
+  user = await User.create({
+    email: 'a@a.com',
+    password: 'hello',
+    name: 'Jane Doe',
+  });
+
+  token = newToken(user);
+  event = await Event.create({
+    name: faker.name.findName(),
+    virtual: true,
+    eventDateTime: [
+      {
+        eventDate: new Date(),
+        eventStartTime: new Date().getTime() + 43200, // starts 30 minutes in
+        eventEndTime: new Date().getTime() + 86400, // ends am hour later
+      },
+    ],
+    createdBy: user._id,
+  });
+});
+
+const BASE_URL = '/api/v1';
 
 describe('create ticket', () => {
-  test('requires an eventId ', async () => {
-    const body = {}
-    const req = {
-      body,
-    }
-    const res = {
-      status(status) {
-        expect(status).toBe(422)
-        return this
-      },
-      json(result) {
-        expect(typeof result.message).toBe('string')
-      },
-    }
+  test('validates eventId is provided ', async () => {
+    const body = {};
+    const jwt = `Bearer ${token}`;
+    const response = await request(app)
+      .post(`${BASE_URL}${ROUTES.TICKET}`)
+      .set('Authorization', jwt)
+      .send(body);
+    expect(response.statusCode).toBe(422);
+  });
 
-    await validate_ticket_request(req, res)
-  })
-  test('check an event exist ', async () => {
-    const req = {
-      body: { eventId: '618e25847166e8371b63ae1a' },
-    }
-    const res = {
-      status(status) {
-        expect(status).toBe(404)
-        return this
-      },
-      json(result) {
-        expect(typeof result.message).toBe('string')
-        expect(result.message).toEqual('Event not found')
-      },
-    }
+  test('check an eventId exists', async () => {
+    const body = { eventId: mongoose.Types.ObjectId() };
 
-    await check_if_event_exists(req, res)
-  })
-  test('create a ticket', async () => {
-    const user = mongoose.Types.ObjectId()
-    const eventId = mongoose.Types.ObjectId()
-    const body = { eventId: eventId }
-    const req = {
-      body,
-      user: { _id: user },
-    }
-    const res = {
-      status(status) {
-        expect(status).toBe(201)
-        return this
-      },
-      json(result) {
-        expect(typeof result.message).toBe('string')
-        expect(result.message).toBe('Ticket Created')
-      },
-    }
+    const jwt = `Bearer ${token}`;
+    const response = await request(app)
+      .post(`${BASE_URL}${ROUTES.TICKET}`)
+      .set('Authorization', jwt)
+      .send(body);
+    expect(response.statusCode).toBe(404);
+  });
 
-    await createTicket(req, res)
-  })
-})
+  test('create a ticket with valid eventId', async () => {
+    const body = { eventId: String(event._id) };
+
+    const jwt = `Bearer ${token}`;
+    const response = await request(app)
+      .post(`${BASE_URL}${ROUTES.TICKET}`)
+      .set('Authorization', jwt)
+      .send(body);
+    expect(response.statusCode).toBe(201);
+  });
+});

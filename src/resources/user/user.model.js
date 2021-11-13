@@ -1,5 +1,5 @@
-import mongoose from 'mongoose'
-import bcrypt from 'bcrypt'
+import mongoose from 'mongoose';
+import bcrypt from 'bcrypt';
 
 const userSchema = new mongoose.Schema(
   {
@@ -11,35 +11,35 @@ const userSchema = new mongoose.Schema(
     },
     password: { type: String, required: true },
   },
-  { timestamps: true }
-)
+  { timestamps: true },
+);
 
-userSchema.pre('save', function (next) {
+userSchema.pre('save', function pre_save(next) {
   if (!this.isModified('password')) {
-    return next()
+    return next();
   }
 
-  bcrypt.hash(this.password, 8, (err, hash) => {
+  return bcrypt.hash(this.password, 8, (err, hash) => {
     if (err) {
-      return next(err)
+      return next(err);
     }
 
-    this.password = hash
-    next()
-  })
-})
+    this.password = hash;
+    return next();
+  });
+});
 
-userSchema.methods.checkPassword = function (password) {
-  const passwordHash = this.password
+userSchema.methods.checkPassword = function check_password(password) {
+  const passwordHash = this.password;
   return new Promise((resolve, reject) => {
     bcrypt.compare(password, passwordHash, (err, same) => {
       if (err) {
-        return reject(err)
+        return reject(err);
       }
 
-      resolve(same)
-    })
-  })
-}
+      return resolve(same);
+    });
+  });
+};
 
-export const User = mongoose.model('user', userSchema)
+export const User = mongoose.model('user', userSchema);

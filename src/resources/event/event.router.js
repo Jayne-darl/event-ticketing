@@ -1,33 +1,36 @@
-import { Router } from 'express'
-import { ROUTES } from './routes'
-import { eventController } from './event.controllers'
+import { Router } from 'express';
+import { ROUTES } from './routes';
+import { eventController } from './event.controllers';
 import {
   validate_create_event_formdata,
-  validate_update_event_formdata,
-} from './event.middleware'
-import { authorise_user } from '../../utils/auth'
+  validate_update_event_formdata, is_valid_event_time,
+} from './event.middleware';
+import { authorise_user } from '../../utils/auth';
 
-const { EVENT, USER_EVENT, SINGLE_EVENT } = ROUTES
+const { EVENT, USER_EVENT, SINGLE_EVENT } = ROUTES;
 
-const { createEvent, getAllEvent, getMyEvent, updateEvent, deleteEvent } =
-  eventController
+const {
+  createEvent, getAllEvents, getMyEvents, updateEvent, deleteEvent,
+} = eventController;
 
-const eventRouter = Router()
+const eventRouter = Router();
 
 eventRouter.post(
   EVENT,
   authorise_user,
   validate_create_event_formdata,
-  createEvent
-)
-eventRouter.get(EVENT, authorise_user, getAllEvent)
-eventRouter.get(USER_EVENT, authorise_user, getMyEvent)
+  is_valid_event_time,
+  createEvent,
+);
+eventRouter.get(EVENT, authorise_user, getAllEvents);
+eventRouter.get(USER_EVENT, authorise_user, getMyEvents);
 eventRouter.patch(
   SINGLE_EVENT,
   authorise_user,
   validate_update_event_formdata,
-  updateEvent
-)
-eventRouter.delete(SINGLE_EVENT, authorise_user, deleteEvent)
+  is_valid_event_time,
+  updateEvent,
+);
+eventRouter.delete(SINGLE_EVENT, authorise_user, deleteEvent);
 
-export default eventRouter
+export default eventRouter;
