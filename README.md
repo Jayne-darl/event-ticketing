@@ -73,7 +73,7 @@ These are the HTTP response codes used in this project.
 https://event-ticketing112.herokuapp.com/api/v1/
 
 ## The Documentation is hosted on postman
-https://event-ticketing112.herokuapp.com/api/v1/
+https://documenter.getpostman.com/view/5634000/UVC8D6Sg
 
 ## Author
 Jane U. Onwumere
