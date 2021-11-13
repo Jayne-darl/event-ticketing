@@ -69,7 +69,10 @@ These are the HTTP response codes used in this project.
 | DELETE /api/v1/event/:id	| Delete an event |
 | POST /api/v1/ticket	| Create a ticket for an event |
 
-## The API Endpints are hosted on heroku
+## The API Endpoints are hosted on heroku
+https://event-ticketing112.herokuapp.com/api/v1/
+
+## The Documentation is hosted on postman
 https://event-ticketing112.herokuapp.com/api/v1/
 
 ## Author
